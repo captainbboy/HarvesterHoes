@@ -1,0 +1,14 @@
+name: HarvesterHoes
+version: '${project.version}'
+main: com.captainbboy.harvesterhoes.HarvesterHoes
+authors: [ captain_bboy ]
+description: Upgradable, customizable harvester hoes
+depend: [WorldGuard]
+
+commands:
+  harvesterhoe:
+    usage: /harvesterhoe give <player> [haste] [radius] [autosell] [sellmult]
+    description: Manage/give harvester hoes.
+  upgrade:
+    usage: /upgrade
+    description: Upgrade your harvester hoe.
