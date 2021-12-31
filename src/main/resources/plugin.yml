@@ -9,6 +9,9 @@ commands:
   harvesterhoe:
     usage: /harvesterhoe give <player> [haste] [radius] [autosell] [sellmult]
     description: Manage/give harvester hoes.
+    aliases:
+      - hh
+      - hoe
   upgrade:
     usage: /upgrade
     description: Upgrade your harvester hoe.

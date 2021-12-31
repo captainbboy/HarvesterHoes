@@ -1,6 +1,7 @@
 package com.captainbboy.harvesterhoes;
 
-import com.captainbboy.harvesterhoes.commands.GiveCommand;
+import com.captainbboy.harvesterhoes.SQLite.SQLite;
+import com.captainbboy.harvesterhoes.commands.MainCommand;
 import com.captainbboy.harvesterhoes.commands.GiveCommandTabHandler;
 import com.captainbboy.harvesterhoes.commands.UpgradeCommand;
 import com.captainbboy.harvesterhoes.events.GUIEvents;
@@ -11,13 +12,11 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public final class HarvesterHoes extends JavaPlugin {
@@ -25,6 +24,8 @@ public final class HarvesterHoes extends JavaPlugin {
     private WorldGuardPlugin worldGuard;
     private PlayerHandler playerHandler = new PlayerHandler();
     private PlayerItemEvent interactEvent = new PlayerItemEvent(this);
+    private SQLite sqLite;
+    public String currVersion = "1.1";
     public Economy eco;
 
     @Override
@@ -36,13 +37,18 @@ public final class HarvesterHoes extends JavaPlugin {
             return;
         }
 
+        // Database
+        sqLite = new SQLite(this);
+        sqLite.load();
+        sqLite.initialize();
+
         // Events
         getServer().getPluginManager().registerEvents(new PlayerBlockBreakEvent(this), this);
         getServer().getPluginManager().registerEvents(new GUIEvents(this), this);
         getServer().getPluginManager().registerEvents(interactEvent, this);
 
         // Commands
-        getCommand("harvesterhoe").setExecutor(new GiveCommand(this));
+        getCommand("harvesterhoe").setExecutor(new MainCommand(this));
         getCommand("harvesterhoe").setTabCompleter(new GiveCommandTabHandler(this));
         getCommand("upgrade").setExecutor(new UpgradeCommand(this));
 
@@ -78,7 +84,7 @@ public final class HarvesterHoes extends JavaPlugin {
             Player p = Bukkit.getPlayer(uuid);
             if(p != null) {
                 String message = this.getConfig().getString("money-in-last-minute-message");
-                message = message.replaceAll("\\{amount}", String.valueOf(map.get(uuid)));
+                message = message.replaceAll("\\{amount}", GeneralUtil.formatNumber(String.valueOf(map.get(uuid))));
                 p.sendMessage(GeneralUtil.messageWithColorCode(message));
             }
         }
@@ -98,6 +104,10 @@ public final class HarvesterHoes extends JavaPlugin {
             eco = economy.getProvider();
 
         return (eco != null);
+    }
+
+    public SQLite getSQLite() {
+        return this.sqLite;
     }
 
     public PlayerHandler getPlayerHandler() {

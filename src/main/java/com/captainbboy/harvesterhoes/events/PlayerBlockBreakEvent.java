@@ -2,6 +2,7 @@ package com.captainbboy.harvesterhoes.events;
 
 import com.captainbboy.harvesterhoes.GeneralUtil;
 import com.captainbboy.harvesterhoes.HarvesterHoes;
+import com.captainbboy.harvesterhoes.SQLite.SQLite;
 import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -95,6 +96,11 @@ public class PlayerBlockBreakEvent implements Listener {
                             GeneralUtil.givePlayerItem(e.getPlayer(), Material.SUGAR_CANE);
                         }
                     }
+
+                    Double currencyMultiplier = 1.0;
+
+                    SQLite db = this.plugin.getSQLite();
+                    GeneralUtil.updateBalance(db, p.getUniqueId(), amountOfCaneToGive * currencyMultiplier);
                 }
 
             }

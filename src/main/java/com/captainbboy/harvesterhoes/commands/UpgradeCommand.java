@@ -2,6 +2,7 @@ package com.captainbboy.harvesterhoes.commands;
 
 import com.captainbboy.harvesterhoes.GeneralUtil;
 import com.captainbboy.harvesterhoes.HarvesterHoes;
+import com.captainbboy.harvesterhoes.SQLite.SQLite;
 import de.tr7zw.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
@@ -63,7 +64,7 @@ public class UpgradeCommand implements CommandExecutor {
                     ItemMeta hasteMeta = hasteUpgrade.getItemMeta();
                     hasteMeta.addEnchant(Enchantment.DURABILITY, 3, true);
                     hasteMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    hasteMeta.setDisplayName(GeneralUtil.messageWithColorCode(baseName.replace("{type}", "Haste")));
+                    hasteMeta.setDisplayName(GeneralUtil.messageWithColorCode(baseName.replaceAll("\\{type}", "Haste")));
                     List<String> hasteLore =  new ArrayList<>();
                     Double hasteUpgradePrice = calculatePrice(config.getDouble("haste-price-start"), config.getDouble("haste-price-exponent-rate"), Double.valueOf(hasteLevel));
                     for (String s : baseLore) {
@@ -75,7 +76,7 @@ public class UpgradeCommand implements CommandExecutor {
                                 s = s.replaceAll("\\{nextValue}", String.valueOf(hasteLevel + 1));
                             }
                         }
-                        s = s.replaceAll("\\{price}", String.valueOf(hasteUpgradePrice));
+                        s = s.replaceAll("\\{price}", GeneralUtil.formatNumber(hasteUpgradePrice));
                         hasteLore.add(GeneralUtil.messageWithColorCode(s));
                     }
                     hasteMeta.setLore(hasteLore);
@@ -87,7 +88,7 @@ public class UpgradeCommand implements CommandExecutor {
                     ItemMeta radiusMeta = radiusUpgrade.getItemMeta();
                     radiusMeta.addEnchant(Enchantment.DURABILITY, 3, true);
                     radiusMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    radiusMeta.setDisplayName(GeneralUtil.messageWithColorCode(baseName.replace("{type}", "Radius")));
+                    radiusMeta.setDisplayName(GeneralUtil.messageWithColorCode(baseName.replaceAll("\\{type}", "Radius")));
                     List<String> radiusLore =  new ArrayList<>();
                     Double radiusUpgradePrice = calculatePrice(config.getDouble("radius-price-start"), config.getDouble("radius-price-exponent-rate"), Double.valueOf(radiusLevel));
                     for (String s : baseLore) {
@@ -99,7 +100,7 @@ public class UpgradeCommand implements CommandExecutor {
                                 s = s.replaceAll("\\{nextValue}", String.valueOf(radiusLevel + 1));
                             }
                         }
-                        s = s.replaceAll("\\{price}", String.valueOf(radiusUpgradePrice));
+                        s = s.replaceAll("\\{price}", GeneralUtil.formatNumber(radiusUpgradePrice));
                         radiusLore.add(GeneralUtil.messageWithColorCode(s));
                     }
                     radiusMeta.setLore(radiusLore);
@@ -111,7 +112,7 @@ public class UpgradeCommand implements CommandExecutor {
                     ItemMeta autoSellMeta = autoSellUpgrade.getItemMeta();
                     autoSellMeta.addEnchant(Enchantment.DURABILITY, 3, true);
                     autoSellMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    autoSellMeta.setDisplayName(GeneralUtil.messageWithColorCode(baseName.replace("{type}", "AutoSell")));
+                    autoSellMeta.setDisplayName(GeneralUtil.messageWithColorCode(baseName.replaceAll("\\{type}", "AutoSell")));
                     List<String> autoSellLore =  new ArrayList<>();
                     for (String s : baseLore) {
                         s = s.replaceAll("\\{currentValue}", String.valueOf(autoSell));
@@ -122,7 +123,7 @@ public class UpgradeCommand implements CommandExecutor {
                                 s = s.replaceAll("\\{nextValue}", "true");
                             }
                         }
-                        s = s.replaceAll("\\{price}", String.valueOf(config.getDouble("autosell-price")));
+                        s = s.replaceAll("\\{price}", GeneralUtil.formatNumber(config.getDouble("autosell-price")));
                         autoSellLore.add(GeneralUtil.messageWithColorCode(s));
                     }
                     autoSellMeta.setLore(autoSellLore);
@@ -134,7 +135,7 @@ public class UpgradeCommand implements CommandExecutor {
                     ItemMeta sellMultMeta = sellMultUpgrade.getItemMeta();
                     sellMultMeta.addEnchant(Enchantment.DURABILITY, 3, true);
                     sellMultMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    sellMultMeta.setDisplayName(GeneralUtil.messageWithColorCode(baseName.replace("{type}", "Sell Multiplier")));
+                    sellMultMeta.setDisplayName(GeneralUtil.messageWithColorCode(baseName.replaceAll("\\{type}", "Sell Multiplier")));
                     Double sellMultIncr = config.getDouble("sell-multiplper-increment");
                     Double sellMultUpgradePrice = calculatePrice(config.getDouble("sell-multiplier-price-start"), config.getDouble("sell-multiplier-price-exponent-rate"), (sellMultiplier - 1.0)/sellMultIncr);
                     List<String> sellMultLore =  new ArrayList<>();
@@ -147,13 +148,36 @@ public class UpgradeCommand implements CommandExecutor {
                                 s = s.replaceAll("\\{nextValue}", String.valueOf(GeneralUtil.roundToHundredths(sellMultiplier + sellMultIncr)));
                             }
                         }
-                        s = s.replaceAll("\\{price}", String.valueOf(sellMultUpgradePrice));
+                        s = s.replaceAll("\\{price}", GeneralUtil.formatNumber(sellMultUpgradePrice));
                         sellMultLore.add(GeneralUtil.messageWithColorCode(s));
                     }
                     sellMultMeta.setLore(sellMultLore);
                     sellMultUpgrade.setItemMeta(sellMultMeta);
                     items[16] = sellMultUpgrade;
 
+                    // Make currency show-er
+                    ItemStack currencyShow = new ItemStack(Material.SUGAR_CANE, 1);
+                    ItemMeta currencyShowMeta = currencyShow.getItemMeta();
+                    currencyShowMeta.addEnchant(Enchantment.DURABILITY, 3, true);
+                    currencyShowMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+
+                    Double currencyValue = GeneralUtil.getNumber(this.plugin.getSQLite().getBalance(p.getUniqueId()));
+
+                    String baseCurrencyName = config.getString("currency-item-name");
+                    String currencyName = config.getString("name-of-harvesterhoe-currency");
+
+                    List<String> baseCurrencyLore = config.getStringList("currency-item-lore");
+                    List<String> currencyShowLore =  new ArrayList<>();
+                    for (String s : baseCurrencyLore) {
+                        s = s.replaceAll("\\{currentValue}", String.valueOf(GeneralUtil.roundToHundredths(currencyValue)));
+                        s = s.replaceAll("\\{currency}", currencyName);
+                        currencyShowLore.add(GeneralUtil.messageWithColorCode(s));
+                    }
+                    currencyShowMeta.setDisplayName(GeneralUtil.messageWithColorCode(baseCurrencyName.replaceAll("\\{currency}", currencyName)));
+                    currencyShowMeta.setLore(currencyShowLore);
+                    currencyShow.setItemMeta(currencyShowMeta);
+                    items[18] = currencyShow;
+                    
                     inv.setContents(items);
                     p.openInventory(inv);
                 } else {

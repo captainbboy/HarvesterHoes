@@ -1,4 +1,5 @@
 price-of-sugarcane: 10.0
+name-of-harvesterhoe-currency: 'Essence'
 
 item-name: '&5&l*** &d&lHarvester Hoe &5&l***'
 
@@ -9,6 +10,19 @@ item-lore:
   - '&7&lRadius: &6{radiusValue}'
   - '&7&lAutosell: &6{autosellValue} &8({autosellEnabled})'
   - '&7&lSell Multiplier: &6{sellMultiplierValue}'
+
+upgrade-item-name: '&5&l*** &6&l{type} Upgrade &5&l***'
+
+upgrade-item-lore:
+  - ''
+  - '&7&lCurrent Value: &6{currentValue}'
+  - '&7&lNext Value: &6{nextValue}'
+  - '&7&lPrice: &6{price}'
+
+currency-item-name: '&a&lAmount of {currency}'
+currency-item-lore:
+  - ''
+  - '&7You currently have: &6{currentValue} &7{currency}.'
 
 max-haste: 5
 max-radius: 3
@@ -30,9 +44,11 @@ autosell-price: 100000.0
 
 sell-multiplper-increment: 0.05
 
-item-sent-message: '&a&l(!) &aTarget Received The HarvesterHoe!'
+item-sent-message: '&a&l(!) &aTarget received a HarvesterHoe!'
 
-item-recieved-message: '&a&l(!) &aYou Have Received The HarvesterHoe!'
+item-recieved-message: '&a&l(!) &aYou have received a HarvesterHoe!'
+
+balance-message: '&a&l(!) &aYou currently have {amount} {customCurrency}.'
 
 money-in-last-minute-message: '&a&l(!) &aYou have earned ${amount} in the last minute from selling sugarcane.'
 
@@ -47,11 +63,3 @@ too-poor-message: '&c&l(!) &cYou cannot afford this upgrade!'
 successful-upgrade-purchase-message: '&c&l(!) &aYou have successfully upgraded your harvester hoe''s {type} for {price}!'
 
 toggle-autosell-message: '&c&l(!) &aYou have {value} AutoSell!'
-
-upgrade-item-name: '&5&l*** &6&l{type} Upgrade &5&l***'
-
-upgrade-item-lore:
-  - ''
-  - '&7&lCurrent Value: &6{currentValue}'
-  - '&7&lNext Value: &6{nextValue}'
-  - '&7&lPrice: &6{price}'

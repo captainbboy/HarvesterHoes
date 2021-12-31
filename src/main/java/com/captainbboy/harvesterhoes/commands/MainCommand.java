@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class GiveCommand implements CommandExecutor {
+public class MainCommand implements CommandExecutor {
 
     HarvesterHoes plugin;
 
-    public GiveCommand(HarvesterHoes plg) {
+    public MainCommand(HarvesterHoes plg) {
         plugin = plg;
     }
 
@@ -31,18 +31,17 @@ public class GiveCommand implements CommandExecutor {
             if (args.length == 0) {
                 sender.sendMessage(GeneralUtil.messageWithColorCode("&8&m------------------------------------"));
                 sender.sendMessage("");
-                sender.sendMessage(GeneralUtil.messageWithColorCode("          &7Version &a[1.0] &7by &a&ncaptain_bboy"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("          &7Version &a["+this.plugin.currVersion+"] &7by &a&ncaptain_bboy"));
                 sender.sendMessage("");
                 sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe give &e<player> [haste] [radius] [autosell] [sellmult]"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe balance"));
                 sender.sendMessage("");
                 sender.sendMessage(GeneralUtil.messageWithColorCode("&8&m------------------------------------"));
-            }
-
-            if (args.length >= 2 && args[0].equalsIgnoreCase("give")) {
+            } else if (args.length >= 2 && args[0].equalsIgnoreCase("give")) {
                 if (args[1] == null || args[1].equals("")) {
                     sender.sendMessage(GeneralUtil.messageWithColorCode("&8&m------------------------------------"));
                     sender.sendMessage("");
-                    sender.sendMessage(GeneralUtil.messageWithColorCode("          &7Version &a[1.0] &7by &a&ncaptain_bboy"));
+                    sender.sendMessage(GeneralUtil.messageWithColorCode("          &7Version &a["+this.plugin.currVersion+"] &7by &a&ncaptain_bboy"));
                     sender.sendMessage("");
                     sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe give &e<player> [haste] [radius] [autosell] [sellmult]"));
                     sender.sendMessage("");
@@ -116,6 +115,22 @@ public class GiveCommand implements CommandExecutor {
                 } else {
                     sender.sendMessage(GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("no-permission-message")));
                 }
+            } else if (args.length >= 1 && (args[0].equalsIgnoreCase("balance") || args[0].equalsIgnoreCase("bal"))) {
+                if (sender instanceof Player) {
+                    String msg = this.plugin.getConfig().getString("balance-message");
+                    msg = msg.replaceAll("\\{amount}", GeneralUtil.formatNumber(this.plugin.getSQLite().getBalance(((Player) sender).getUniqueId())));
+                    msg = msg.replaceAll("\\{customCurrency}", this.plugin.getConfig().getString("name-of-harvesterhoe-currency"));
+                    sender.sendMessage(GeneralUtil.messageWithColorCode(msg));
+                }
+            } else {
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&8&m------------------------------------"));
+                sender.sendMessage("");
+                sender.sendMessage(GeneralUtil.messageWithColorCode("          &7Version &a["+this.plugin.currVersion+"] &7by &a&ncaptain_bboy"));
+                sender.sendMessage("");
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe give &e<player> [haste] [radius] [autosell] [sellmult]"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe balance"));
+                sender.sendMessage("");
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&8&m------------------------------------"));
             }
         }
 

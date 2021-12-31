@@ -1,9 +1,13 @@
 package com.captainbboy.harvesterhoes;
 
+import com.captainbboy.harvesterhoes.SQLite.SQLite;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.text.DecimalFormat;
+import java.util.UUID;
 
 public class GeneralUtil {
 
@@ -75,5 +79,35 @@ public class GeneralUtil {
         long i = (long) Math.ceil(input);
         return Double.valueOf(((i + 99) / 100) * 100);
     };
+
+    public static String formatNumber(String str) {
+        if(isNumeric(str)) {
+            double amount = Double.parseDouble(str);
+            DecimalFormat formatter = new DecimalFormat("#,##0.00");
+
+            return formatter.format(amount);
+        } else {
+            return "is_not_numeric";
+        }
+    }
+
+    public static String formatNumber(Double num) {
+        DecimalFormat formatter = new DecimalFormat("#,##0.00");
+        return formatter.format(num);
+    }
+
+    public static void updateBalance(SQLite db, UUID uuid, Double value) {
+        String result = db.getBalance(uuid);
+        if(result.equals("0.000") || result == null) {
+            db.addRowToCurrency(uuid, value);
+        } else {
+            if(isNumeric(result)) {
+                Double oldValue = getNumber(result);
+                db.setBalance(uuid, roundToHundredths(oldValue + value));
+            } else {
+                db.setBalance(uuid, roundToHundredths(value));
+            }
+        }
+    }
 
 }

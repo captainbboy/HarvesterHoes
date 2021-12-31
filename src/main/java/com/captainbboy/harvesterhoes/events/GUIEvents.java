@@ -2,6 +2,7 @@ package com.captainbboy.harvesterhoes.events;
 
 import com.captainbboy.harvesterhoes.GeneralUtil;
 import com.captainbboy.harvesterhoes.HarvesterHoes;
+import com.captainbboy.harvesterhoes.SQLite.SQLite;
 import com.captainbboy.harvesterhoes.commands.UpgradeCommand;
 import de.tr7zw.nbtapi.NBTItem;
 import net.milkbowl.vault.economy.Economy;
@@ -131,16 +132,17 @@ public class GUIEvents implements Listener {
 
     private boolean handlePurchase(Player p, String type, Double price) {
         FileConfiguration config = this.plugin.getConfig();
-        Economy eco = this.plugin.eco;
+        SQLite db = this.plugin.getSQLite();
 
-        if(eco.getBalance(p) < price) {
+        Double bal = GeneralUtil.getNumber(db.getBalance(p.getUniqueId()));
+        if(bal < price) {
             p.sendMessage(GeneralUtil.messageWithColorCode(config.getString("too-poor-message")));
             return false;
         } else {
-            eco.withdrawPlayer(p, price);
+            db.setBalance(p.getUniqueId(), bal - price);
             String message = GeneralUtil.messageWithColorCode(config.getString("successful-upgrade-purchase-message"));
             message = message.replaceAll("\\{type}", type);
-            message = message.replaceAll("\\{price}", String.valueOf(price));
+            message = message.replaceAll("\\{price}", GeneralUtil.formatNumber(price));
             p.sendMessage(message);
             p.closeInventory();
             return true;

@@ -5,11 +5,11 @@
 This is a 1.8.8 Spigot plugin that adds upgradable, customizable harvester hoes into minecraft.
 
 ## Commands:
-* /harvesterhoe - General information about the plugin
-* /harvesterhoe give <username> [haste] [radius] [autosell] [sellmult] - Give a user a harvesterhoe with upgrades (or not)
+* /harvesterhoe - General information about the plugin.
+* /harvesterhoe give <username> [haste] [radius] [autosell] [sellmult] - Give a user a harvesterhoe with upgrades (or not).
+* /harvesterhoe balance - View your balance of harvesterhoe currency.
 * /upgrade - Upgrade the harvesterhoe in your hand.
   
 ## TODO:
-* Make the currency to upgrade harvesterhoes different.
 * Add more configurability for prices.
 * Add plugin support for ShopGUIPlus and similar shop plugins to automatically gather the price of sugarcane.
