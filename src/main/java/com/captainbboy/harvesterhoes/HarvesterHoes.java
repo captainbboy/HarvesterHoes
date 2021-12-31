@@ -2,7 +2,7 @@ package com.captainbboy.harvesterhoes;
 
 import com.captainbboy.harvesterhoes.SQLite.SQLite;
 import com.captainbboy.harvesterhoes.commands.MainCommand;
-import com.captainbboy.harvesterhoes.commands.GiveCommandTabHandler;
+import com.captainbboy.harvesterhoes.commands.MainCommandTabHandler;
 import com.captainbboy.harvesterhoes.commands.UpgradeCommand;
 import com.captainbboy.harvesterhoes.events.GUIEvents;
 import com.captainbboy.harvesterhoes.events.PlayerBlockBreakEvent;
@@ -31,8 +31,8 @@ public final class HarvesterHoes extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-        if(!setupEconomy()) {
-            getServer().getConsoleSender().sendMessage(ChatColor.GOLD+"[HarvesterHoes]"+ChatColor.RED+" You must have Vault and an Economy Plugin installed!");
+        if (!setupEconomy()) {
+            getServer().getConsoleSender().sendMessage(ChatColor.GOLD + "[HarvesterHoes]" + ChatColor.RED + " You must have Vault and an Economy Plugin installed!");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -49,7 +49,7 @@ public final class HarvesterHoes extends JavaPlugin {
 
         // Commands
         getCommand("harvesterhoe").setExecutor(new MainCommand(this));
-        getCommand("harvesterhoe").setTabCompleter(new GiveCommandTabHandler(this));
+        getCommand("harvesterhoe").setTabCompleter(new MainCommandTabHandler(this));
         getCommand("upgrade").setExecutor(new UpgradeCommand(this));
 
         getServer().getConsoleSender().sendMessage(GeneralUtil.messageWithColorCode("&d&l(!) &bHarvesterHoe Plugin Has Been &aEnabled!"));

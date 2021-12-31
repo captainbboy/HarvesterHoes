@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class GiveCommandTabHandler implements TabCompleter {
+public class MainCommandTabHandler implements TabCompleter {
 
     HarvesterHoes plugin;
 
-    public GiveCommandTabHandler (HarvesterHoes plg) {
+    public MainCommandTabHandler(HarvesterHoes plg) {
         plugin = plg;
     }
 
@@ -29,25 +29,34 @@ public class GiveCommandTabHandler implements TabCompleter {
 
         if(args.length == 1) {
             options.add("give");
+            options.add("balance");
         }
 
         if(args.length == 2) {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                options.add(p.getName());
+            if(args[0].equalsIgnoreCase("give")) {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    options.add(p.getName());
+                }
             }
         }
 
         if(args.length == 3) {
-            options.add("0");
+            if(args[0].equalsIgnoreCase("give")) {
+                options.add("0");
+            }
         }
 
         if(args.length == 4) {
-            options.add("1");
+            if(args[0].equalsIgnoreCase("give")) {
+                options.add("1");
+            }
         }
 
         if(args.length == 5) {
-            options.add("true");
-            options.add("false");
+            if(args[0].equalsIgnoreCase("give")) {
+                options.add("true");
+                options.add("false");
+            }
         }
 
         StringUtil.copyPartialMatches(args[0], options, completions);
