@@ -11,5 +11,6 @@ This is a 1.8.8 Spigot plugin that adds upgradable, customizable harvester hoes 
 * /upgrade - Upgrade the harvesterhoe in your hand.
   
 ## TODO:
+* Add more balance commands for the custom currency.
 * Add more configurability for prices.
 * Add plugin support for ShopGUIPlus and similar shop plugins to automatically gather the price of sugarcane.
