@@ -3,7 +3,9 @@ package com.captainbboy.harvesterhoes.commands;
 import com.captainbboy.harvesterhoes.GeneralUtil;
 import com.captainbboy.harvesterhoes.HarvesterHoes;
 import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 public class MainCommand implements CommandExecutor {
 
@@ -28,13 +31,17 @@ public class MainCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (cmd.getName().equalsIgnoreCase("harvesterhoe")) {
+            String currencyName = this.plugin.getConfig().getString("name-of-harvesterhoe-currency");
             if (args.length == 0) {
                 sender.sendMessage(GeneralUtil.messageWithColorCode("&8&m------------------------------------"));
                 sender.sendMessage("");
                 sender.sendMessage(GeneralUtil.messageWithColorCode("          &7Version &a["+this.plugin.currVersion+"] &7by &a&ncaptain_bboy"));
                 sender.sendMessage("");
                 sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe give &e<player> [haste] [radius] [autosell] [sellmult]"));
-                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe balance"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe balance &e[player]"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe setbalance &e<player> <value>"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe addbalance &e<player> <value>"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe removebalance &e<player> <value>"));
                 sender.sendMessage("");
                 sender.sendMessage(GeneralUtil.messageWithColorCode("&8&m------------------------------------"));
             } else if (args.length >= 2 && args[0].equalsIgnoreCase("give")) {
@@ -116,11 +123,136 @@ public class MainCommand implements CommandExecutor {
                     sender.sendMessage(GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("no-permission-message")));
                 }
             } else if (args.length >= 1 && (args[0].equalsIgnoreCase("balance") || args[0].equalsIgnoreCase("bal"))) {
-                if (sender instanceof Player) {
-                    String msg = this.plugin.getConfig().getString("balance-message");
-                    msg = msg.replaceAll("\\{amount}", GeneralUtil.formatNumber(this.plugin.getSQLite().getBalance(((Player) sender).getUniqueId())));
-                    msg = msg.replaceAll("\\{customCurrency}", this.plugin.getConfig().getString("name-of-harvesterhoe-currency"));
+                if(args.length == 1) {
+                    if (sender instanceof Player) {
+                        String msg = this.plugin.getConfig().getString("balance-message");
+                        msg = msg.replaceAll("\\{amount}", GeneralUtil.formatNumber(this.plugin.getSQLite().getBalance(((Player) sender).getUniqueId())));
+                        msg = msg.replaceAll("\\{customCurrency}", currencyName);
+                        sender.sendMessage(GeneralUtil.messageWithColorCode(msg));
+                    } else {
+                        sender.sendMessage(GeneralUtil.messageWithColorCode(
+                            "&c&l(!) &cOnly players can run this command!"
+                        ));
+                    }
+                } else {
+                    if (sender.hasPermission("harvesterhoe.viewothersbalance")) {
+                        OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                        if(target == null) {
+                            sender.sendMessage(GeneralUtil.messageWithColorCode(
+                                "&c&l(!) &cPlayer not found!"
+                            ));
+                            return true;
+                        }
+                        UUID uuid = target.getUniqueId();
+                        String msg = this.plugin.getConfig().getString("balance-message");
+                        msg = msg.replaceAll("\\{amount}", GeneralUtil.formatNumber(this.plugin.getSQLite().getBalance(uuid)));
+                        msg = msg.replaceAll("\\{customCurrency}", currencyName);
+                        sender.sendMessage(GeneralUtil.messageWithColorCode(msg));
+                    } else {
+                        sender.sendMessage(GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("no-permission-message")));
+                    }
+                }
+            } else if (args.length >= 1 && (args[0].equalsIgnoreCase("setbalance") || args[0].equalsIgnoreCase("setbal"))) {
+                if (sender.hasPermission("harvesterhoe.adminset")) {
+                    OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                    if(target == null) {
+                        sender.sendMessage(GeneralUtil.messageWithColorCode(
+                            "&c&l(!) &cPlayer not found!"
+                        ));
+                        return true;
+                    }
+                    UUID uuid = target.getUniqueId();
+                    if(!GeneralUtil.isNumeric(args[2])) {
+                        sender.sendMessage(GeneralUtil.messageWithColorCode(
+                            "&c&l(!) &cValue not a number!"
+                        ));
+                        return true;
+                    }
+                    Double value = GeneralUtil.getNumber(args[2]);
+                    this.plugin.getSQLite().setBalance(uuid, value);
+
+                    String msg = this.plugin.getConfig().getString("change-balance-message");
+                    msg = msg.replaceAll("\\{amount}", GeneralUtil.formatNumber(value));
+                    msg = msg.replaceAll("\\{customCurrency}", currencyName);
+                    msg = msg.replaceAll("\\{player}", target.getName());
                     sender.sendMessage(GeneralUtil.messageWithColorCode(msg));
+
+                    String msg2 = this.plugin.getConfig().getString("changed-balance-message");
+                    msg2 = msg2.replaceAll("\\{amount}", GeneralUtil.formatNumber(value));
+                    msg2 = msg2.replaceAll("\\{customCurrency}", currencyName);
+                    if(target.isOnline()) {
+                        target.getPlayer().sendMessage(GeneralUtil.messageWithColorCode(msg2));
+                    }
+                } else {
+                    sender.sendMessage(GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("no-permission-message")));
+                }
+            } else if (args.length >= 1 && (args[0].equalsIgnoreCase("addbalance") || args[0].equalsIgnoreCase("addbal"))) {
+                if (sender.hasPermission("harvesterhoe.adminset")) {
+                    OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                    if(target == null) {
+                        sender.sendMessage(GeneralUtil.messageWithColorCode(
+                            "&c&l(!) &cPlayer not found!"
+                        ));
+                        return true;
+                    }
+                    UUID uuid = target.getUniqueId();
+                    if(!GeneralUtil.isNumeric(args[2])) {
+                        sender.sendMessage(GeneralUtil.messageWithColorCode(
+                            "&c&l(!) &cValue not a number!"
+                        ));
+                        return true;
+                    }
+                    Double value = GeneralUtil.getNumber(args[2]);
+                    Double newValue = GeneralUtil.updateBalance(this.plugin.getSQLite(), uuid, value);
+
+                    String msg = this.plugin.getConfig().getString("change-balance-message");
+                    msg = msg.replaceAll("\\{amount}", GeneralUtil.formatNumber(newValue));
+                    msg = msg.replaceAll("\\{customCurrency}", currencyName);
+                    msg = msg.replaceAll("\\{player}", target.getName());
+                    sender.sendMessage(GeneralUtil.messageWithColorCode(msg));
+
+                    String msg2 = this.plugin.getConfig().getString("changed-balance-message");
+                    msg2 = msg2.replaceAll("\\{amount}", GeneralUtil.formatNumber(newValue));
+                    msg2 = msg2.replaceAll("\\{customCurrency}", currencyName);
+                    if(target.isOnline()) {
+                        target.getPlayer().sendMessage(GeneralUtil.messageWithColorCode(msg2));
+                    }
+                } else {
+                    sender.sendMessage(GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("no-permission-message")));
+                }
+            } else if (args.length >= 1 && (args[0].equalsIgnoreCase("removebalance") || args[0].equalsIgnoreCase("removebal") || args[0].equalsIgnoreCase("subtractbalance") || args[0].equalsIgnoreCase("subtractbal"))) {
+                if (sender.hasPermission("harvesterhoe.adminset")) {
+                    OfflinePlayer target = Bukkit.getOfflinePlayer(args[1]);
+                    if(target == null) {
+                        sender.sendMessage(GeneralUtil.messageWithColorCode(
+                            "&c&l(!) &cPlayer not found!"
+                        ));
+                        return true;
+                    }
+                    UUID uuid = target.getUniqueId();
+                    if(!GeneralUtil.isNumeric(args[2])) {
+                        sender.sendMessage(GeneralUtil.messageWithColorCode(
+                            "&c&l(!) &cValue not a number!"
+                        ));
+                        return true;
+                    }
+                    Double value = GeneralUtil.getNumber(args[2]);
+                    Double newValue = GeneralUtil.updateBalance(this.plugin.getSQLite(), uuid, -value);
+
+                    String msg = this.plugin.getConfig().getString("change-balance-message");
+                    msg = msg.replaceAll("\\{amount}", GeneralUtil.formatNumber(newValue));
+                    msg = msg.replaceAll("\\{customCurrency}", currencyName);
+                    msg = msg.replaceAll("\\{player}", target.getName());
+                    sender.sendMessage(GeneralUtil.messageWithColorCode(msg));
+
+                    String msg2 = this.plugin.getConfig().getString("changed-balance-message");
+                    msg2 = msg2.replaceAll("\\{amount}", GeneralUtil.formatNumber(newValue));
+                    msg2 = msg2.replaceAll("\\{customCurrency}", currencyName);
+                    if(target.isOnline()) {
+                        target.getPlayer().sendMessage(GeneralUtil.messageWithColorCode(msg2));
+                    }
+                } else {
+                    sender.sendMessage(GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("no-permission-message")));
                 }
             } else {
                 sender.sendMessage(GeneralUtil.messageWithColorCode("&8&m------------------------------------"));
@@ -128,7 +260,10 @@ public class MainCommand implements CommandExecutor {
                 sender.sendMessage(GeneralUtil.messageWithColorCode("          &7Version &a["+this.plugin.currVersion+"] &7by &a&ncaptain_bboy"));
                 sender.sendMessage("");
                 sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe give &e<player> [haste] [radius] [autosell] [sellmult]"));
-                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe balance"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe balance &e[player]"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe setbalance &e<player> <value>"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe addbalance &e<player> <value>"));
+                sender.sendMessage(GeneralUtil.messageWithColorCode("&e&l(!) &7/harvesterhoe removebalance &e<player> <value>"));
                 sender.sendMessage("");
                 sender.sendMessage(GeneralUtil.messageWithColorCode("&8&m------------------------------------"));
             }

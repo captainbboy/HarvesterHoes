@@ -25,7 +25,7 @@ public final class HarvesterHoes extends JavaPlugin {
     private PlayerHandler playerHandler = new PlayerHandler();
     private PlayerItemEvent interactEvent = new PlayerItemEvent(this);
     private SQLite sqLite;
-    public String currVersion = "1.1";
+    public String currVersion = "1.2";
     public Economy eco;
 
     @Override

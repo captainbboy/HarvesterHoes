@@ -96,16 +96,19 @@ public class GeneralUtil {
         return formatter.format(num);
     }
 
-    public static void updateBalance(SQLite db, UUID uuid, Double value) {
+    public static Double updateBalance(SQLite db, UUID uuid, Double value) {
         String result = db.getBalance(uuid);
         if(result.equals("0.000") || result == null) {
             db.addRowToCurrency(uuid, value);
+            return value;
         } else {
             if(isNumeric(result)) {
                 Double oldValue = getNumber(result);
                 db.setBalance(uuid, roundToHundredths(oldValue + value));
+                return (oldValue + value);
             } else {
                 db.setBalance(uuid, roundToHundredths(value));
+                return value;
             }
         }
     }

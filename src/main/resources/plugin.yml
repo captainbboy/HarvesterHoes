@@ -8,7 +8,7 @@ depend: [WorldGuard]
 commands:
   harvesterhoe:
     usage: /harvesterhoe give <player> [haste] [radius] [autosell] [sellmult]
-    description: Manage/give harvester hoes.
+    description: Manage/give harvester hoes & manager harvesterhoe currency.
     aliases:
       - hh
       - hoe

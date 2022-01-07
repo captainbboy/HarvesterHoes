@@ -50,6 +50,10 @@ item-recieved-message: '&a&l(!) &aYou have received a HarvesterHoe!'
 
 balance-message: '&a&l(!) &aYou currently have {amount} {customCurrency}.'
 
+change-balance-message: '&a&l(!) &a{player}''s balance has been successfully set to {amount} {customCurrency}.'
+
+changed-balance-message: '&a&l(!) &aYour balance has been set to {amount} {customCurrency}.'
+
 money-in-last-minute-message: '&a&l(!) &aYou have earned ${amount} in the last minute from selling sugarcane.'
 
 no-permission-message: '&c&l(!) &cYou do not have the permission to execute this command!'
