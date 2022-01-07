@@ -147,6 +147,8 @@ public class MainCommand implements CommandExecutor {
                         String msg = this.plugin.getConfig().getString("balance-message");
                         msg = msg.replaceAll("\\{amount}", GeneralUtil.formatNumber(this.plugin.getSQLite().getBalance(uuid)));
                         msg = msg.replaceAll("\\{customCurrency}", currencyName);
+                        msg = msg.replaceAll("You", target.getName());
+                        msg = msg.replaceAll("you", target.getName());
                         sender.sendMessage(GeneralUtil.messageWithColorCode(msg));
                     } else {
                         sender.sendMessage(GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("no-permission-message")));
