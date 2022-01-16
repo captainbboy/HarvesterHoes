@@ -5,7 +5,7 @@ import com.captainbboy.harvesterhoes.commands.MainCommand;
 import com.captainbboy.harvesterhoes.commands.MainCommandTabHandler;
 import com.captainbboy.harvesterhoes.commands.UpgradeCommand;
 import com.captainbboy.harvesterhoes.events.GUIEvents;
-import com.captainbboy.harvesterhoes.events.PlayerBlockBreakEvent;
+import com.captainbboy.harvesterhoes.events.PlayerBlockEvent;
 import com.captainbboy.harvesterhoes.events.PlayerItemEvent;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import net.milkbowl.vault.economy.Economy;
@@ -25,7 +25,7 @@ public final class HarvesterHoes extends JavaPlugin {
     private PlayerHandler playerHandler = new PlayerHandler();
     private PlayerItemEvent interactEvent = new PlayerItemEvent(this);
     private SQLite sqLite;
-    public String currVersion = "1.2";
+    public String currVersion = "1.3";
     public Economy eco;
 
     @Override
@@ -37,13 +37,16 @@ public final class HarvesterHoes extends JavaPlugin {
             return;
         }
 
+        // Default config
+        this.saveDefaultConfig();
+
         // Database
         sqLite = new SQLite(this);
         sqLite.load();
         sqLite.initialize();
 
         // Events
-        getServer().getPluginManager().registerEvents(new PlayerBlockBreakEvent(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerBlockEvent(this), this);
         getServer().getPluginManager().registerEvents(new GUIEvents(this), this);
         getServer().getPluginManager().registerEvents(interactEvent, this);
 
@@ -53,7 +56,6 @@ public final class HarvesterHoes extends JavaPlugin {
         getCommand("upgrade").setExecutor(new UpgradeCommand(this));
 
         getServer().getConsoleSender().sendMessage(GeneralUtil.messageWithColorCode("&d&l(!) &bHarvesterHoe Plugin Has Been &aEnabled!"));
-        this.saveDefaultConfig();
 
         startMinuteMessages();
     }
@@ -61,7 +63,7 @@ public final class HarvesterHoes extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        getServer().getConsoleSender().sendMessage(GeneralUtil.messageWithColorCode("&d&l(!) &bHarvesterHoe Plugin Has Been &aEnabled!"));
+        getServer().getConsoleSender().sendMessage(GeneralUtil.messageWithColorCode("&d&l(!) &bHarvesterHoe Plugin Has Been &cDisabled!"));
     }
 
     public WorldGuardPlugin wGuard() {

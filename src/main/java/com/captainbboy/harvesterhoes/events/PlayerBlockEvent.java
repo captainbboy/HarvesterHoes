@@ -4,6 +4,7 @@ import com.captainbboy.harvesterhoes.GeneralUtil;
 import com.captainbboy.harvesterhoes.HarvesterHoes;
 import com.captainbboy.harvesterhoes.SQLite.SQLite;
 import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,21 +14,41 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class PlayerBlockBreakEvent implements Listener {
+public class PlayerBlockEvent implements Listener {
 
     HarvesterHoes plugin;
 
-    public PlayerBlockBreakEvent(HarvesterHoes plg) {
+    public PlayerBlockEvent(HarvesterHoes plg) {
         plugin = plg;
+    }
+
+    private ArrayList<Location> newBlocks = new ArrayList<>();
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent e) {
+        if (!e.isCancelled()) {
+            Block b = e.getBlock();
+            if(b.getType() == Material.SUGAR_CANE_BLOCK) {
+                newBlocks.add(b.getLocation());
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                    public void run() {
+                        newBlocks.remove(b.getLocation());
+                    }
+                }, 20L * 10L);
+            }
+        }
     }
 
     @EventHandler
@@ -60,6 +81,10 @@ public class PlayerBlockBreakEvent implements Listener {
                     Integer amountOfCaneToGive = 0;
 
                     for(Block block : blocks) {
+                        if(newBlocks.contains(block.getLocation())) {
+                            p.sendMessage(GeneralUtil.messageWithColorCode(plugin.getConfig().getString("recently-placed-message")));
+                            continue;
+                        }
                         Location currLoc;
                         for(
                                 currLoc = block.getLocation();

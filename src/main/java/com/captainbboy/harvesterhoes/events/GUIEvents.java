@@ -107,12 +107,12 @@ public class GUIEvents implements Listener {
                 if(sellMultiplier >= config.getDouble("max-sell-multiplier")) {
                     p.sendMessage(GeneralUtil.messageWithColorCode(config.getString("stat-already-maxed-message").replaceAll("\\{type}", "Sell Multiplier")));
                 } else {
-                    Double sellMultIncr = config.getDouble("sell-multiplper-increment");
+                    Double sellMultIncr = config.getDouble("sell-multiplier-increment");
                     Double price = UpgradeCommand.calculatePrice(config.getDouble("sell-multiplier-price-start"), config.getDouble("sell-multiplier-price-exponent-rate"), GeneralUtil.roundToHundredths((sellMultiplier - 1.0)/sellMultIncr));
                     if(handlePurchase(p, "Radius", price)) {
-                        ItemStack newHoe = handleItem(hoe, hasteLevel, radiusLevel, autoSell, GeneralUtil.roundToHundredths(sellMultiplier + config.getDouble("sell-multiplper-increment")), autoSellEnabled);
+                        ItemStack newHoe = handleItem(hoe, hasteLevel, radiusLevel, autoSell, GeneralUtil.roundToHundredths(sellMultiplier + config.getDouble("sell-multiplier-increment")), autoSellEnabled);
                         NBTItem nbti2 = new NBTItem(newHoe);
-                        nbti2.setDouble("harvHoeSellMultiplier", GeneralUtil.roundToHundredths(sellMultiplier + config.getDouble("sell-multiplper-increment")));
+                        nbti2.setDouble("harvHoeSellMultiplier", GeneralUtil.roundToHundredths(sellMultiplier + config.getDouble("sell-multiplier-increment")));
                         p.setItemInHand(nbti2.getItem());
                     };
                 }

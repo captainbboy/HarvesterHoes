@@ -67,3 +67,5 @@ too-poor-message: '&c&l(!) &cYou cannot afford this upgrade!'
 successful-upgrade-purchase-message: '&c&l(!) &aYou have successfully upgraded your harvester hoe''s {type} for {price}!'
 
 toggle-autosell-message: '&c&l(!) &aYou have {value} AutoSell!'
+
+recently-placed-message: '&c&l(!) &cYou can''t break that block since you just placed it!'

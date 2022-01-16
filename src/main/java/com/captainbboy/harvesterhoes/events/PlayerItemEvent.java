@@ -3,6 +3,7 @@ package com.captainbboy.harvesterhoes.events;
 import com.captainbboy.harvesterhoes.GeneralUtil;
 import com.captainbboy.harvesterhoes.HarvesterHoes;
 import de.tr7zw.nbtapi.NBTItem;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -26,6 +27,8 @@ public class PlayerItemEvent implements Listener {
     public void onPlayerItemInteractEvent(PlayerInteractEvent e) {
         if(e.getPlayer().isSneaking() && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
             ItemStack item = e.getPlayer().getItemInHand();
+            if(item == null || item.getType() == Material.AIR)
+                return;
             NBTItem nbti = new NBTItem(item);
             if (nbti.hasKey("isHarvHoe") && nbti.getBoolean("isHarvHoe")) {
                 if(nbti.hasKey("harvHoeAutoSell") && nbti.getBoolean("harvHoeAutoSell")) {
@@ -57,6 +60,7 @@ public class PlayerItemEvent implements Listener {
                     item2.setItemMeta(itemMeta);
 
                     e.getPlayer().setItemInHand(item2);
+                    e.setCancelled(true);
                     e.getPlayer().sendMessage(message);
                 }
             }
