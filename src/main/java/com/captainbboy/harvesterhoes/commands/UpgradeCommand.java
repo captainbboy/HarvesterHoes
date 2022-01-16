@@ -136,7 +136,7 @@ public class UpgradeCommand implements CommandExecutor {
                     sellMultMeta.addEnchant(Enchantment.DURABILITY, 3, true);
                     sellMultMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                     sellMultMeta.setDisplayName(GeneralUtil.messageWithColorCode(baseName.replaceAll("\\{type}", "Sell Multiplier")));
-                    Double sellMultIncr = config.getDouble("sell-multiplper-increment");
+                    Double sellMultIncr = config.getDouble("sell-multiplier-increment");
                     Double sellMultUpgradePrice = calculatePrice(config.getDouble("sell-multiplier-price-start"), config.getDouble("sell-multiplier-price-exponent-rate"), (sellMultiplier - 1.0)/sellMultIncr);
                     List<String> sellMultLore =  new ArrayList<>();
                     for (String s : baseLore) {

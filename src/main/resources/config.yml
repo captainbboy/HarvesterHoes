@@ -42,7 +42,7 @@ sell-multiplier-price-exponent-rate: 1.15
 
 autosell-price: 100000.0
 
-sell-multiplper-increment: 0.05
+sell-multiplier-increment: 0.05
 
 item-sent-message: '&a&l(!) &aTarget received a HarvesterHoe!'
 
