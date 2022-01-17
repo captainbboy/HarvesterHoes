@@ -58,6 +58,9 @@ public class PlayerBlockEvent implements Listener {
             Player p = e.getPlayer();
             if (p.getGameMode() == GameMode.SURVIVAL) {
 
+                if(p.getItemInHand() == null || p.getItemInHand().getType() == Material.AIR)
+                    return;
+
                 NBTItem nbti = new NBTItem(p.getItemInHand());
 
                 if (nbti.hasKey("isHarvHoe") && nbti.getBoolean("isHarvHoe") && e.getBlock().getType().equals(Material.SUGAR_CANE_BLOCK) && this.plugin.wGuard().canBuild(p, p.getLocation())) {

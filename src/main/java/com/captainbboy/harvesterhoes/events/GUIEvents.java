@@ -94,7 +94,7 @@ public class GUIEvents implements Listener {
                 if(autoSell == true) {
                     p.sendMessage(GeneralUtil.messageWithColorCode(config.getString("stat-already-maxed-message").replaceAll("\\{type}", "AutoSell")));
                 } else {
-                    Double price = config.getDouble("auto-sell-price");
+                    Double price = config.getDouble("autosell-price");
                     if(handlePurchase(p, "AutoSell", price)) {
                         ItemStack newHoe = handleItem(hoe, hasteLevel, radiusLevel, true, sellMultiplier, autoSellEnabled);
                         NBTItem nbti2 = new NBTItem(newHoe);

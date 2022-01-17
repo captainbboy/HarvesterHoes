@@ -34,7 +34,12 @@ public class UpgradeCommand implements CommandExecutor {
         if (cmd.getName().equalsIgnoreCase("upgrade")) {
             if(sender instanceof Player) {
                 Player p = (Player) sender;
-                NBTItem nbti = new NBTItem(p.getItemInHand());
+                ItemStack item = p.getItemInHand();
+                if (item == null || item.getType() == Material.AIR) {
+                    sender.sendMessage(GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("no-hoe-message")));
+                    return true;
+                }
+                NBTItem nbti = new NBTItem(item);
                 if (nbti.hasKey("isHarvHoe") && nbti.getBoolean("isHarvHoe")) {
                     Integer hasteLevel = nbti.getInteger("harvHoeHasteLevel");
                     if(hasteLevel == null)
