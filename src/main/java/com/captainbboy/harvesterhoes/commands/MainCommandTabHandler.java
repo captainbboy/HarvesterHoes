@@ -67,7 +67,7 @@ public class MainCommandTabHandler implements TabCompleter {
             }
         }
 
-        StringUtil.copyPartialMatches(args[0], options, completions);
+        StringUtil.copyPartialMatches(args[args.length - 1], options, completions);
         Collections.sort(completions);
 
         return completions;

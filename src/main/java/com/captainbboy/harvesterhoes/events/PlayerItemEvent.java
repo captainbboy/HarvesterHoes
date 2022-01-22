@@ -25,43 +25,50 @@ public class PlayerItemEvent implements Listener {
 
     @EventHandler
     public void onPlayerItemInteractEvent(PlayerInteractEvent e) {
-        if(e.getPlayer().isSneaking() && (e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        if(e.getAction() == Action.RIGHT_CLICK_AIR || e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             ItemStack item = e.getPlayer().getItemInHand();
             if(item == null || item.getType() == Material.AIR)
                 return;
-            NBTItem nbti = new NBTItem(item);
-            if (nbti.hasKey("isHarvHoe") && nbti.getBoolean("isHarvHoe")) {
-                if(nbti.hasKey("harvHoeAutoSell") && nbti.getBoolean("harvHoeAutoSell")) {
-                    Boolean oldValue = nbti.getBoolean("harvHoeAutoSellEnabled");
-                    nbti.setBoolean("harvHoeAutoSellEnabled", !oldValue);
-                    ItemStack item2 = nbti.getItem();
-                    String message = GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("toggle-autosell-message"));
-                    if(!oldValue) {
-                        message = message.replaceAll("\\{value}", "enabled");
-                    } else {
-                        message = message.replaceAll("\\{value}", "disabled");
-                    }
-                    ItemMeta itemMeta = item2.getItemMeta();
-                    List<String> lore = itemMeta.getLore();
-                    List<String> newLore = new ArrayList<>();
-                    for(String s : lore) {
-                        if(s.contains("disabled")) {
-                            if(!oldValue) {
-                                s = s.replaceAll("disabled", "enabled");
-                            }
-                        } else if(s.contains("enabled")) {
-                            if(oldValue) {
-                                s = s.replaceAll("enabled", "disabled");
-                            }
+            if(e.getPlayer().isSneaking()) {
+                NBTItem nbti = new NBTItem(item);
+                if (nbti.hasKey("isHarvHoe") && nbti.getBoolean("isHarvHoe")) {
+                    this.plugin.getUpgradeCmd().showGUI(item, e.getPlayer());
+                }
+            } else {
+                NBTItem nbti = new NBTItem(item);
+                if (nbti.hasKey("isHarvHoe") && nbti.getBoolean("isHarvHoe")) {
+                    if(nbti.hasKey("harvHoeAutoSell") && nbti.getBoolean("harvHoeAutoSell")) {
+                        Boolean oldValue = nbti.getBoolean("harvHoeAutoSellEnabled");
+                        nbti.setBoolean("harvHoeAutoSellEnabled", !oldValue);
+                        ItemStack item2 = nbti.getItem();
+                        String message = GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("toggle-autosell-message"));
+                        if(!oldValue) {
+                            message = message.replaceAll("\\{value}", "enabled");
+                        } else {
+                            message = message.replaceAll("\\{value}", "disabled");
                         }
-                        newLore.add(s);
-                    }
-                    itemMeta.setLore(newLore);
-                    item2.setItemMeta(itemMeta);
+                        ItemMeta itemMeta = item2.getItemMeta();
+                        List<String> lore = itemMeta.getLore();
+                        List<String> newLore = new ArrayList<>();
+                        for(String s : lore) {
+                            if(s.contains("disabled")) {
+                                if(!oldValue) {
+                                    s = s.replaceAll("disabled", "enabled");
+                                }
+                            } else if(s.contains("enabled")) {
+                                if(oldValue) {
+                                    s = s.replaceAll("enabled", "disabled");
+                                }
+                            }
+                            newLore.add(s);
+                        }
+                        itemMeta.setLore(newLore);
+                        item2.setItemMeta(itemMeta);
 
-                    e.getPlayer().setItemInHand(item2);
-                    e.setCancelled(true);
-                    e.getPlayer().sendMessage(message);
+                        e.getPlayer().setItemInHand(item2);
+                        e.setCancelled(true);
+                        e.getPlayer().sendMessage(message);
+                    }
                 }
             }
         }

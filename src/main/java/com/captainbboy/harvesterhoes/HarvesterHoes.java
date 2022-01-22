@@ -25,6 +25,7 @@ public final class HarvesterHoes extends JavaPlugin {
     private PlayerHandler playerHandler = new PlayerHandler();
     private PlayerItemEvent interactEvent = new PlayerItemEvent(this);
     private SQLite sqLite;
+    private UpgradeCommand upgradeCmd = new UpgradeCommand(this);
     public String currVersion = "1.3";
     public Economy eco;
 
@@ -53,7 +54,7 @@ public final class HarvesterHoes extends JavaPlugin {
         // Commands
         getCommand("harvesterhoe").setExecutor(new MainCommand(this));
         getCommand("harvesterhoe").setTabCompleter(new MainCommandTabHandler(this));
-        getCommand("upgrade").setExecutor(new UpgradeCommand(this));
+        getCommand("upgrade").setExecutor(upgradeCmd);
 
         getServer().getConsoleSender().sendMessage(GeneralUtil.messageWithColorCode("&d&l(!) &bHarvesterHoe Plugin Has Been &aEnabled!"));
 
@@ -118,5 +119,9 @@ public final class HarvesterHoes extends JavaPlugin {
 
     public PlayerItemEvent getInteractEvent() {
         return this.interactEvent;
+    }
+
+    public UpgradeCommand getUpgradeCmd() {
+        return this.upgradeCmd;
     }
 }
