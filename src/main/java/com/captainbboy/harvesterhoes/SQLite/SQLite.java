@@ -13,7 +13,7 @@ import java.util.logging.Level;
 
 public class SQLite extends Database {
 
-    String dbname;
+    private final String dbname;
     public SQLite(HarvesterHoes instance){
         super(instance);
         dbname = "database";

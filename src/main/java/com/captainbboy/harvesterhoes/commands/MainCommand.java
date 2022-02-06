@@ -23,7 +23,7 @@ import java.util.UUID;
 
 public class MainCommand implements CommandExecutor {
 
-    HarvesterHoes plugin;
+    private final HarvesterHoes plugin;
 
     public MainCommand(HarvesterHoes plg) {
         plugin = plg;

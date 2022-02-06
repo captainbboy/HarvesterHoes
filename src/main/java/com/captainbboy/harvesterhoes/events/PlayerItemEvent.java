@@ -17,7 +17,7 @@ import java.util.List;
 
 public class PlayerItemEvent implements Listener {
 
-    HarvesterHoes plugin;
+    private final HarvesterHoes plugin;
 
     public PlayerItemEvent(HarvesterHoes plg) {
         plugin = plg;

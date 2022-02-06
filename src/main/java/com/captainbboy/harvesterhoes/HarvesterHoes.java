@@ -17,6 +17,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public final class HarvesterHoes extends JavaPlugin {
@@ -82,7 +83,7 @@ public final class HarvesterHoes extends JavaPlugin {
 
     public void startMinuteMessages() {
 
-        HashMap<UUID, Double> map = this.playerHandler.getAmountEarned();
+        Map<UUID, Double> map = this.playerHandler.getAmountEarned();
         for(UUID uuid : map.keySet()) {
             Player p = Bukkit.getPlayer(uuid);
             if(p != null) {

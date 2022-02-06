@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 public class PlayerBlockEvent implements Listener {
 
-    HarvesterHoes plugin;
+    private final HarvesterHoes plugin;
 
     public PlayerBlockEvent(HarvesterHoes plg) {
         plugin = plg;

@@ -13,7 +13,7 @@ import java.util.*;
 
 public class MainCommandTabHandler implements TabCompleter {
 
-    HarvesterHoes plugin;
+    private final HarvesterHoes plugin;
 
     public MainCommandTabHandler(HarvesterHoes plg) {
         plugin = plg;

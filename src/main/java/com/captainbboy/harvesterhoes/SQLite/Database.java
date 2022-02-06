@@ -11,8 +11,8 @@ import java.util.logging.Level;
 
 
 public abstract class Database {
-    HarvesterHoes plugin;
-    Connection connection;
+    public final HarvesterHoes plugin;
+    public Connection connection;
     // The name of the table we created back in SQLite class.
     public String table = "currency";
     public Database(HarvesterHoes instance){
@@ -73,7 +73,8 @@ public abstract class Database {
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("SELECT * FROM currency WHERE uuid = '"+playerUUID.toString()+"';");
+            ps = conn.prepareStatement("SELECT * FROM currency WHERE uuid = ?;");
+            ps.setString(1, playerUUID.toString());
 
             rs = ps.executeQuery();
             while(rs.next()){
@@ -102,35 +103,14 @@ public abstract class Database {
         ResultSet rs = null;
         try {
             conn = getSQLConnection();
-            ps = conn.prepareStatement("UPDATE currency SET amount = ? WHERE uuid = '"+playerUUID.toString()+"'");
+            ps = conn.prepareStatement("UPDATE currency SET amount = ? WHERE uuid = ?");
             ps.setString(1, String.valueOf(amount));
+            ps.setString(2, playerUUID.toString());
             ps.executeUpdate();
             return "worked";
         } catch (SQLException ex) {
             plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
             return "error";
-        } finally {
-            try {
-                if (ps != null)
-                    ps.close();
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException ex) {
-                plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionClose(), ex);
-            }
-        }
-    }
-
-    public void deleteDatabase(String databaseName) {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            conn = getSQLConnection();
-            ps = conn.prepareStatement("DROP TABLE IF EXISTS "+databaseName);
-            ps.executeUpdate();
-        } catch (SQLException ex) {
-            plugin.getLogger().log(Level.SEVERE, Errors.sqlConnectionExecute(), ex);
         } finally {
             try {
                 if (ps != null)

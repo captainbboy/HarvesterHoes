@@ -1,12 +1,13 @@
 package com.captainbboy.harvesterhoes;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class PlayerHandler {
 
-    private HashMap<UUID, Double> amountEarned = new HashMap<>();
-    private HashMap<UUID, Double> amountEssenceEarned = new HashMap<>();
+    private Map<UUID, Double> amountEarned = new HashMap<>();
+    private Map<UUID, Double> amountEssenceEarned = new HashMap<>();
 
     public void addToEarned(UUID playerUUID, Double amountToAdd) {
         if(this.amountEarned.containsKey(playerUUID)) {
@@ -21,7 +22,7 @@ public class PlayerHandler {
         this.amountEarned.clear();
     }
 
-    public HashMap<UUID, Double> getAmountEarned() {
+    public Map<UUID, Double> getAmountEarned() {
         return this.amountEarned;
     }
 

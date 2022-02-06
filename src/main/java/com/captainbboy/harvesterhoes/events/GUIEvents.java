@@ -29,7 +29,7 @@ import java.util.List;
 
 public class GUIEvents implements Listener {
 
-    HarvesterHoes plugin;
+    private final HarvesterHoes plugin;
 
     public GUIEvents(HarvesterHoes plg) {
         this.plugin = plg;
@@ -53,80 +53,86 @@ public class GUIEvents implements Listener {
             NBTItem nbti = new NBTItem(hoe);
             Economy eco = this.plugin.eco;
 
-            if (nbti.hasKey("isHarvHoe") && nbti.getBoolean("isHarvHoe")) {
-                Integer hasteLevel = nbti.getInteger("harvHoeHasteLevel");
-                Integer radiusLevel = nbti.getInteger("harvHoeRadiusLevel");
-                if (radiusLevel == 0)
-                    radiusLevel = 1;
-                Boolean autoSell = nbti.getBoolean("harvHoeAutoSell");
-                Boolean autoSellEnabled = nbti.getBoolean("harvHoeAutoSellEnabled");
-                Double sellMultiplier = nbti.getDouble("harvHoeSellMultiplier");
-                if (sellMultiplier == 0.0)
-                    sellMultiplier = 1.0;
+            if (!nbti.hasKey("isHarvHoe") || !nbti.getBoolean("isHarvHoe")) {
+                p.sendMessage(GeneralUtil.messageWithColorCode(config.getString("no-hoe-message")));
+                return;
+            }
 
-                ItemStack item = e.getCurrentItem();
-                if (item.getType() == Material.STAINED_GLASS_PANE)
-                    return;
-                if (item.getType() == Material.GOLD_PICKAXE) {
+            Integer hasteLevel = nbti.getInteger("harvHoeHasteLevel");
+            Integer radiusLevel = nbti.getInteger("harvHoeRadiusLevel");
+            if (radiusLevel == 0)
+                radiusLevel = 1;
+            Boolean autoSell = nbti.getBoolean("harvHoeAutoSell");
+            Boolean autoSellEnabled = nbti.getBoolean("harvHoeAutoSellEnabled");
+            Double sellMultiplier = nbti.getDouble("harvHoeSellMultiplier");
+            if (sellMultiplier == 0.0)
+                sellMultiplier = 1.0;
+
+            ItemStack item = e.getCurrentItem();
+            switch (item.getType()) {
+                case STAINED_GLASS_PANE:
+                    break;
+                case GOLD_PICKAXE:
                     // Clicked Haste Upgrade
                     if (hasteLevel >= config.getInt("max-haste")) {
                         p.sendMessage(GeneralUtil.messageWithColorCode(config.getString("stat-already-maxed-message").replaceAll("\\{type}", "Haste")));
-                    } else {
-                        Double price = UpgradeCommand.calculatePrice(config.getDouble("haste-price-start"), config.getDouble("haste-price-exponent-rate"), Double.valueOf(hasteLevel));
-                        if (handlePurchase(p, "Haste", price)) {
-                            ItemStack newHoe = handleItem(hoe, hasteLevel + 1, radiusLevel, autoSell, sellMultiplier, autoSellEnabled);
-                            NBTItem nbti2 = new NBTItem(newHoe);
-                            nbti2.setInteger("harvHoeHasteLevel", hasteLevel + 1);
-                            p.setItemInHand(nbti2.getItem());
-                            plugin.getUpgradeCmd().showGUI(p.getItemInHand(), p);
-                        }
+                        break;
                     }
-                } else if (item.getType() == Material.DIAMOND_PICKAXE) {
+                    Double hastePrice = UpgradeCommand.calculatePrice(config.getDouble("haste-price-start"), config.getDouble("haste-price-exponent-rate"), Double.valueOf(hasteLevel));
+                    if (handlePurchase(p, "Haste", hastePrice)) {
+                        ItemStack newHoe = handleItem(hoe, hasteLevel + 1, radiusLevel, autoSell, sellMultiplier, autoSellEnabled);
+                        NBTItem nbti2 = new NBTItem(newHoe);
+                        nbti2.setInteger("harvHoeHasteLevel", hasteLevel + 1);
+                        p.setItemInHand(nbti2.getItem());
+                        plugin.getUpgradeCmd().showGUI(p.getItemInHand(), p);
+                    }
+                    break;
+                case DIAMOND_PICKAXE:
                     // Clicked Radius Upgrade
                     if (radiusLevel >= config.getInt("max-radius")) {
                         p.sendMessage(GeneralUtil.messageWithColorCode(config.getString("stat-already-maxed-message").replaceAll("\\{type}", "Radius")));
-                    } else {
-                        Double price = UpgradeCommand.calculatePrice(config.getDouble("radius-price-start"), config.getDouble("radius-price-exponent-rate"), Double.valueOf(radiusLevel));
-                        if (handlePurchase(p, "Radius", price)) {
-                            ItemStack newHoe = handleItem(hoe, hasteLevel, radiusLevel + 1, autoSell, sellMultiplier, autoSellEnabled);
-                            NBTItem nbti2 = new NBTItem(newHoe);
-                            nbti2.setInteger("harvHoeRadiusLevel", radiusLevel + 1);
-                            p.setItemInHand(nbti2.getItem());
-                            plugin.getUpgradeCmd().showGUI(p.getItemInHand(), p);
-                        }
+                        break;
                     }
-                } else if (item.getType() == Material.DIAMOND_HOE) {
+                    Double radiusPrice = UpgradeCommand.calculatePrice(config.getDouble("radius-price-start"), config.getDouble("radius-price-exponent-rate"), Double.valueOf(radiusLevel));
+                    if (handlePurchase(p, "Radius", radiusPrice)) {
+                        ItemStack newHoe = handleItem(hoe, hasteLevel, radiusLevel + 1, autoSell, sellMultiplier, autoSellEnabled);
+                        NBTItem nbti2 = new NBTItem(newHoe);
+                        nbti2.setInteger("harvHoeRadiusLevel", radiusLevel + 1);
+                        p.setItemInHand(nbti2.getItem());
+                        plugin.getUpgradeCmd().showGUI(p.getItemInHand(), p);
+                    }
+                    break;
+                case DIAMOND_HOE:
                     // Clicked AutoSell Upgrade
                     if (autoSell == true) {
                         p.sendMessage(GeneralUtil.messageWithColorCode(config.getString("stat-already-maxed-message").replaceAll("\\{type}", "AutoSell")));
-                    } else {
-                        Double price = config.getDouble("autosell-price");
-                        if (handlePurchase(p, "AutoSell", price)) {
-                            ItemStack newHoe = handleItem(hoe, hasteLevel, radiusLevel, true, sellMultiplier, autoSellEnabled);
-                            NBTItem nbti2 = new NBTItem(newHoe);
-                            nbti2.setBoolean("harvHoeAutoSell", true);
-                            p.setItemInHand(nbti2.getItem());
-                            plugin.getUpgradeCmd().showGUI(p.getItemInHand(), p);
-                        }
+                        break;
                     }
-                } else if (item.getType() == Material.GOLD_HOE) {
+                    Double autoSellPrice = config.getDouble("autosell-price");
+                    if (handlePurchase(p, "AutoSell", autoSellPrice)) {
+                        ItemStack newHoe = handleItem(hoe, hasteLevel, radiusLevel, true, sellMultiplier, autoSellEnabled);
+                        NBTItem nbti2 = new NBTItem(newHoe);
+                        nbti2.setBoolean("harvHoeAutoSell", true);
+                        p.setItemInHand(nbti2.getItem());
+                        plugin.getUpgradeCmd().showGUI(p.getItemInHand(), p);
+                    }
+                    break;
+                case GOLD_HOE:
                     // Clicked Sell Multiplier Upgrade
                     if (sellMultiplier >= config.getDouble("max-sell-multiplier")) {
                         p.sendMessage(GeneralUtil.messageWithColorCode(config.getString("stat-already-maxed-message").replaceAll("\\{type}", "Sell Multiplier")));
-                    } else {
-                        Double sellMultIncr = config.getDouble("sell-multiplier-increment");
-                        Double price = UpgradeCommand.calculatePrice(config.getDouble("sell-multiplier-price-start"), config.getDouble("sell-multiplier-price-exponent-rate"), GeneralUtil.roundToHundredths((sellMultiplier - 1.0) / sellMultIncr));
-                        if (handlePurchase(p, "Sell Multiplier", price)) {
-                            ItemStack newHoe = handleItem(hoe, hasteLevel, radiusLevel, autoSell, GeneralUtil.roundToHundredths(sellMultiplier + config.getDouble("sell-multiplier-increment")), autoSellEnabled);
-                            NBTItem nbti2 = new NBTItem(newHoe);
-                            nbti2.setDouble("harvHoeSellMultiplier", GeneralUtil.roundToHundredths(sellMultiplier + config.getDouble("sell-multiplier-increment")));
-                            p.setItemInHand(nbti2.getItem());
-                            plugin.getUpgradeCmd().showGUI(p.getItemInHand(), p);
-                        }
+                        break;
                     }
-                }
-            } else {
-                p.sendMessage(GeneralUtil.messageWithColorCode(config.getString("no-hoe-message")));
+                    Double sellMultIncr = config.getDouble("sell-multiplier-increment");
+                    Double sellMultPrice = UpgradeCommand.calculatePrice(config.getDouble("sell-multiplier-price-start"), config.getDouble("sell-multiplier-price-exponent-rate"), GeneralUtil.roundToHundredths((sellMultiplier - 1.0) / sellMultIncr));
+                    if (handlePurchase(p, "Sell Multiplier", sellMultPrice)) {
+                        ItemStack newHoe = handleItem(hoe, hasteLevel, radiusLevel, autoSell, GeneralUtil.roundToHundredths(sellMultiplier + config.getDouble("sell-multiplier-increment")), autoSellEnabled);
+                        NBTItem nbti2 = new NBTItem(newHoe);
+                        nbti2.setDouble("harvHoeSellMultiplier", GeneralUtil.roundToHundredths(sellMultiplier + config.getDouble("sell-multiplier-increment")));
+                        p.setItemInHand(nbti2.getItem());
+                        plugin.getUpgradeCmd().showGUI(p.getItemInHand(), p);
+                    }
+                    break;
             }
         } else if (e.getInventory().getTitle().equals(GeneralUtil.messageWithColorCode("&6&lUpgrade Menu"))) {
             e.setCancelled(true);
@@ -182,7 +188,7 @@ public class GUIEvents implements Listener {
     // Cancel dragging in our inventory
     @EventHandler
     public void onInventoryClick(final InventoryDragEvent e) {
-        if (e.getInventory().getTitle().equals(GeneralUtil.messageWithColorCode("&5&lHarvester Hoe Upgrades"))) {
+        if (e.getInventory().getTitle().equals(GeneralUtil.messageWithColorCode("&5&lHarvester Hoe Upgrades")) || e.getInventory().getTitle().equals(GeneralUtil.messageWithColorCode("&6&lUpgrade Menu"))) {
             e.setCancelled(true);
         }
     }
@@ -195,24 +201,21 @@ public class GUIEvents implements Listener {
         if(bal < price) {
             p.sendMessage(GeneralUtil.messageWithColorCode(config.getString("too-poor-message")));
             return false;
-        } else {
-            db.setBalance(p.getUniqueId(), bal - price);
-            String message = GeneralUtil.messageWithColorCode(config.getString("successful-upgrade-purchase-message"));
-            message = message.replaceAll("\\{type}", type);
-            message = message.replaceAll("\\{price}", GeneralUtil.formatNumber(price));
-            p.sendMessage(message);
-            return true;
         }
+        db.setBalance(p.getUniqueId(), bal - price);
+        String message = GeneralUtil.messageWithColorCode(config.getString("successful-upgrade-purchase-message"));
+        message = message.replaceAll("\\{type}", type);
+        message = message.replaceAll("\\{price}", GeneralUtil.formatNumber(price));
+        p.sendMessage(message);
+        return true;
     }
 
     private ItemStack handleItem(ItemStack hoe, Integer hasteLevel, Integer radiusLevel, Boolean autoSell, Double sellMultiplier, Boolean autoSellEnabled) {
         ItemMeta meta = hoe.getItemMeta();
         meta.setDisplayName(GeneralUtil.messageWithColorCode(this.plugin.getConfig().getString("item-name")));
         List<String> lores = new ArrayList();
-        Iterator var9 = this.plugin.getConfig().getStringList("item-lore").iterator();
 
-        while(var9.hasNext()) {
-            String s = (String)var9.next();
+        for(String s : this.plugin.getConfig().getStringList("item-lore")) {
             s = s.replaceAll("\\{hasteValue}", String.valueOf(hasteLevel));
             s = s.replaceAll("\\{radiusValue}", String.valueOf(radiusLevel));
             s = s.replaceAll("\\{autosellValue}", String.valueOf(autoSell));
