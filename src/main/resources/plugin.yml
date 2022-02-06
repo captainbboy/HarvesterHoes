@@ -3,7 +3,7 @@ version: '${project.version}'
 main: com.captainbboy.harvesterhoes.HarvesterHoes
 authors: [ captain_bboy ]
 description: Upgradable, customizable harvester hoes
-depend: [WorldGuard]
+depend: [WorldGuard, NBTAPI, Vault]
 
 commands:
   harvesterhoe:

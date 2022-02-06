@@ -16,7 +16,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,12 +26,26 @@ public final class HarvesterHoes extends JavaPlugin {
     private PlayerItemEvent interactEvent = new PlayerItemEvent(this);
     private SQLite sqLite;
     private UpgradeCommand upgradeCmd = new UpgradeCommand(this);
-    public String currVersion = "1.3";
+    public String currVersion = "1.4.1";
     public Economy eco;
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+
+        // Check Dependencies
+        if(getServer().getPluginManager().getPlugin("WorldGuard") == null) {
+            getServer().getConsoleSender().sendMessage(ChatColor.GOLD + "[HarvesterHoes]" + ChatColor.RED + " You must have WorldGuard installed!");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        if(getServer().getPluginManager().getPlugin("NBTAPI") == null) {
+            getServer().getConsoleSender().sendMessage(ChatColor.GOLD + "[HarvesterHoes]" + ChatColor.RED + " You must have NBTAPI installed!");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         if (!setupEconomy()) {
             getServer().getConsoleSender().sendMessage(ChatColor.GOLD + "[HarvesterHoes]" + ChatColor.RED + " You must have Vault and an Economy Plugin installed!");
             getServer().getPluginManager().disablePlugin(this);
@@ -45,7 +58,6 @@ public final class HarvesterHoes extends JavaPlugin {
         // Database
         sqLite = new SQLite(this);
         sqLite.load();
-        sqLite.initialize();
 
         // Events
         getServer().getPluginManager().registerEvents(new PlayerBlockEvent(this), this);
